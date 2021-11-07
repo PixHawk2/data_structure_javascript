@@ -101,6 +101,13 @@ class Graph{
 		//创建队列来存放顶点
 		let queue = new Queue();
 		queue.enqueue(val);
+		
+		//最短路径相关
+		let prev = {};
+		for(let i=0;i<this.vertiecs.length;i++){
+			prev[this.vertiecs[i]] = null;
+		}
+		
 		while(!queue.isEmpty()){
 			const qVertex = queue.dequeue();
 			let edge = this.edgeList[qVertex];
@@ -110,6 +117,7 @@ class Graph{
 				if(color[e] === 'white'){
 					color[e] = 'gray';
 					queue.enqueue(e);
+					prev[e] = qVertex;
 				}
 			}
 			color[qVertex] = 'black';
@@ -117,7 +125,8 @@ class Graph{
 			if(callback){
 				callback(qVertex);
 			}
-		}	
+		}
+		return prev;
 	}
 	//深度优先递归函数实现
 	dfsVisit(val,color,callback){
@@ -148,10 +157,19 @@ graph.addVertiec('V');
 graph.addVertiec('C');
 graph.addVertiec('G');
 
+graph.addVertiec('D');
+graph.addVertiec('E');
+
 graph.addEdge('A','B');
 graph.addEdge('A','V');
 graph.addEdge('A','C');
 graph.addEdge('B','G');
+
+graph.addEdge('C','D');
+graph.addEdge('C','E');
+
+graph.addEdge('V','D');
+graph.addEdge('V','E');
 
 console.log(graph);
 console.log(graph.toString());
@@ -160,3 +178,23 @@ graph.dfs('A',e=>console.log(e));
 
 console.log('广度优先遍历');
 graph.bfs('A',e=>console.log(e));
+const prev = graph.bfs('A');
+const shortPath = (from,to)=>{
+	let vertex = to;
+	let stack = new Stack();
+	while(vertex !== from){
+		stack.push(vertex);
+		//寻找自己的回溯点
+		vertex = prev[vertex];
+	}
+	stack.push(vertex);
+	let path = '';
+	while(!stack.isEmpty()){
+		path += `${stack.pop()}=>`;
+		
+	}
+	path = path.slice(0,path.length-2);
+	return path;
+}
+const path = shortPath('A','G');
+console.log(path);
